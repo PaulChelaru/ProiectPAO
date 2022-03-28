@@ -195,22 +195,18 @@ public class Main {
             }
 
             if(action == 11) {
-                String stockName = in.next();
                 Services.printBelts(stocks);
             }
 
             if(action == 12) {
-                String stockName = in.next();
                 Services.printJackets(stocks);
             }
 
             if(action == 13) {
-                String stockName = in.next();
                 Services.printJewelries(stocks);
             }
 
             if(action == 14) {
-                String stockName = in.next();
                 Services.printPhones(stocks);
             }
 

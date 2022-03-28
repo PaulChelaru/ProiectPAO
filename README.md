@@ -1,5 +1,6 @@
 # ProiectPAO
 Clases:
+  <ul>
   -Address
   -Supplier
   -Stock
@@ -12,8 +13,10 @@ Clases:
     -Phone
     -Jacket
     -Jewelry
+  <ul>
     
 Actions:
+  <ol>
   1.Add product to a specific stocks
   2.Delete product from a specific stocks
   3.Change the price of a product from a specific stock
@@ -30,5 +33,6 @@ Actions:
   14.Display all phoness
   15.Display all products from a specific suppliers
   0. Exits
+  </ol>
     
    

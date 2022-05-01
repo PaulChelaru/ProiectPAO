@@ -5,7 +5,7 @@ import Products.Product;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Category {
+public class Category {
     private Map<Product, Integer> products = new HashMap<>();
 
     public Category() {}

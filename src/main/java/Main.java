@@ -2,6 +2,7 @@ import Address.Address;
 import Categories.Accessories;
 import Categories.Clothing;
 import Categories.Mobile;
+import GenericCSV.Singleton;
 import Products.*;
 import Services.Services;
 import Stocks.Stock;
@@ -46,6 +47,18 @@ public class Main {
         Set<Stock> stocks = new TreeSet<>();
         stocks.add(stock1);
         stocks.add(stock2);
+
+        Singleton.getInstance().createNewFile("Phones.csv");
+        Singleton.getInstance().createNewFile("Belts.csv");
+        Singleton.getInstance().createNewFile("Jackets.csv");
+        Singleton.getInstance().createNewFile("Jewelries.csv");
+        Singleton.getInstance().createNewFile("Actions.csv");
+        Singleton.getInstance().createNewFile("Suppliers.csv");
+
+        Services.storeCurrentProducts(stocks);
+        Services.addProductsFromCSV(stock1, Services.readProducts());
+        Services.storeCurrentSuppliers(suppliers);
+        Services.addSupplierFromCSV(suppliers, Services.readSuppliers());
 
         int action = -1;
         while (action != 0) {

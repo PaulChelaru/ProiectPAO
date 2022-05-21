@@ -1,8 +1,8 @@
 package Services;
 
-import Categories.Accessories;
 import Categories.Clothing;
 import Categories.Mobile;
+import Database.Database;
 import GenericCSV.Singleton;
 import Products.*;
 import Stocks.Stock;
@@ -49,12 +49,15 @@ public class Services {
         for(Stock stock : stocks) {
             for (Map.Entry<Product, Integer> entry : stock.getMobile().getProducts().entrySet()) {
                 writeProductInCSV(entry.getKey(), entry.getValue());
+                insertProduct(entry.getKey(), entry.getValue(), stock.getName());
             }
             for (Map.Entry<Product, Integer> entry : stock.getClothing().getProducts().entrySet()) {
                 writeProductInCSV(entry.getKey(), entry.getValue());
+                insertProduct(entry.getKey(), entry.getValue(), stock.getName());
             }
             for (Map.Entry<Product, Integer> entry : stock.getAccessories().getProducts().entrySet()) {
                 writeProductInCSV(entry.getKey(), entry.getValue());
+                insertProduct(entry.getKey(), entry.getValue(), stock.getName());
             }
         }
     }
@@ -91,6 +94,7 @@ public class Services {
     public static void storeCurrentSuppliers(ArrayList<Supplier> suppliers) {
         for(Supplier supplier : suppliers) {
             writeSupplierInCSV(supplier);
+            insertSupplier(supplier);
         }
     }
 
@@ -107,6 +111,7 @@ public class Services {
 
     public static void addProduct(Stock stock, Product product, int numberOfProducts) {
         actionCompleted("addProduct");
+        insertProduct(product, numberOfProducts, stock.getName());
         writeProductInCSV(product, numberOfProducts);
         if(product instanceof Jewelry || product instanceof Belt) {
             stock.getAccessories().addProduct(product, numberOfProducts);
@@ -129,6 +134,7 @@ public class Services {
     public static void addSupplier(ArrayList<Supplier> suppliers, Supplier supplier) {
         actionCompleted("addSupplier");
         writeSupplierInCSV(supplier);
+        insertSupplier(supplier);
         suppliers.add(supplier);
     }
 
@@ -166,16 +172,19 @@ public class Services {
                 for(Product product : stock.getClothing().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         stock.getClothing().getProducts().remove(product);
+                        deleteProduct(product);
                         break;
                     }
                 for(Product product : stock.getMobile().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         stock.getMobile().getProducts().remove(product);
+                        deleteProduct(product);
                         break;
                     }
                 for(Product product : stock.getAccessories().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         stock.getAccessories().getProducts().remove(product);
+                        deleteProduct(product);
                         break;
                     }
             }
@@ -327,16 +336,19 @@ public class Services {
                 for(Product product : stock.getClothing().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         product.setPrice(newPrice);
+                        updatePrice(product, newPrice);
                         break;
                     }
                 for(Product product : stock.getMobile().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         product.setPrice(newPrice);
+                        updatePrice(product, newPrice);
                         break;
                     }
                 for(Product product : stock.getAccessories().getProducts().keySet())
                     if (product.getName().equals(productName)) {
                         product.setPrice(newPrice);
+                        updatePrice(product, newPrice);
                         break;
                     }
             }
@@ -363,5 +375,59 @@ public class Services {
                             System.out.println(product.getKey().getPrice());
                 }
             }
+    }
+
+    public static void insertProduct(Product product, int quantity, String stockName) {
+        if (product instanceof Phone) {
+            String[] data = {product.getName(), Integer.toString(product.getPrice()), product.getDescription(), product.getSupplier().getName(), Integer.toString(((Phone) product).getStorage()), Double.toString(((Phone) product).getFrontCamera()), Double.toString(((Phone) product).getBackCamera()), Integer.toString(quantity), stockName};
+            Database.getDatabaseInstance().insertProduct(data, "phones");
+        }
+        if (product instanceof Belt) {
+            String[] data = {product.getName(), Integer.toString(product.getPrice()), product.getDescription(), product.getSupplier().getName(), ((Belt) product).getSize(), Integer.toString(quantity), stockName};
+            Database.getDatabaseInstance().insertProduct(data, "belts");
+        }
+
+        if (product instanceof Jacket) {
+            String[] data = {product.getName(), Integer.toString(product.getPrice()), product.getDescription(), product.getSupplier().getName(), ((Jacket) product).getSize(), ((Jacket) product).getColor(), Integer.toString(quantity), stockName};
+            Database.getDatabaseInstance().insertProduct(data, "jackets");
+        }
+
+        if (product instanceof Jewelry) {
+            String[] data = {product.getName(), Integer.toString(product.getPrice()), product.getDescription(), product.getSupplier().getName(), ((Jewelry) product).getMaterial(), Double.toString(((Jewelry) product).getWeight()), Integer.toString(quantity), stockName};
+            Database.getDatabaseInstance().insertProduct(data, "jewelries");
+        }
+    }
+
+    private static void insertSupplier(Supplier supplier) {
+        String[] data = {supplier.getName(), supplier.getAddress().toString(), supplier.getPhoneNumber()};
+        Database.getDatabaseInstance().insertSupplier(data);
+    }
+
+    private static void deleteProduct(Product product) {
+        if (product instanceof Phone) {
+            Database.getDatabaseInstance().deleteProduct(product.getName(), "phones");
+        }
+        if (product instanceof Jewelry) {
+            Database.getDatabaseInstance().deleteProduct(product.getName(), "jewelries");
+        }
+
+        if (product instanceof Belt) {
+            Database.getDatabaseInstance().deleteProduct(product.getName(), "belts");
+        }
+
+        if (product instanceof Jacket) {
+            Database.getDatabaseInstance().deleteProduct(product.getName(), "jackets");
+        }
+    }
+
+    private static void updatePrice(Product product, int newPrice) {
+        if(product instanceof Jewelry)
+            Database.getDatabaseInstance().updateProductPrice("jewelries", product.getName(), Integer.toString(newPrice));
+        else if (product instanceof Phone)
+            Database.getDatabaseInstance().updateProductPrice("phones", product.getName(), Integer.toString(newPrice));
+        else if (product instanceof Jacket)
+            Database.getDatabaseInstance().updateProductPrice("jackets", product.getName(), Integer.toString(newPrice));
+        else if (product instanceof Belt)
+            Database.getDatabaseInstance().updateProductPrice("belts", product.getName(), Integer.toString(newPrice));
     }
 }
